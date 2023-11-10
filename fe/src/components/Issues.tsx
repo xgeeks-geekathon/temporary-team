@@ -1,7 +1,8 @@
 import { MenuItem, MenuList, Typography } from '@mui/material';
+import { createArray } from '../utils';
 
 interface Props {
-  selected: number;
+  selected: number | undefined;
   handleSelect: (index: number) => void;
 }
 
@@ -10,7 +11,7 @@ function Issues({ selected, handleSelect }: Props) {
     <>
       <Typography variant="h5">Issues</Typography>
       <MenuList>
-        {new Array(4).fill(null).map((_, index) => (
+        {createArray(4).map((_, index) => (
           <MenuItem selected={selected === index} onClick={() => handleSelect(index)}>
             Issue {index}
           </MenuItem>

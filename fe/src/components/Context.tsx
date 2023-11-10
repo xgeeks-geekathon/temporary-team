@@ -1,8 +1,11 @@
 import React, { useContext, useState } from 'react';
 
+interface IIssue {}
+
 interface IState {
   repoURL: string | undefined;
-  userStories: any | undefined;
+  issues: IIssue[] | undefined;
+  activeIssue: number | undefined;
 }
 
 interface IMyContext {
@@ -12,13 +15,14 @@ interface IMyContext {
 
 const MyContext = React.createContext<IMyContext>({
   handleChange: () => {},
-  state: { repoURL: undefined, userStories: undefined },
+  state: { repoURL: undefined, issues: undefined, activeIssue: undefined },
 });
 
 function Context({ children }: { children: any }) {
   const [state, setState] = useState<IState>({
     repoURL: undefined,
-    userStories: undefined,
+    issues: undefined,
+    activeIssue: undefined,
   });
 
   const handleChange = (value: Partial<IState>) => {
