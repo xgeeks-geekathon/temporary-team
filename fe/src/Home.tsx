@@ -14,8 +14,12 @@ function Home() {
     handleChange({ activeIssue: index });
   };
 
-  const navigateTo = () => {
+  const navigateToBoilerplate = () => {
     navigate('/boilerplate');
+  };
+
+  const navigateToGenerateCode = () => {
+    navigate('/generate-code');
   };
 
   const issuesData = useFetcher(!state.repoURL);
@@ -43,10 +47,10 @@ function Home() {
                 of letters, as opposed to using 'Content here, content here', making it look like readable English
               </Typography>
               <Box sx={{ mt: 'auto' }}>
-                <Button variant="contained" onClick={navigateTo} sx={{ mr: 3 }}>
+                <Button variant="contained" onClick={navigateToBoilerplate} sx={{ mr: 3 }}>
                   Generate Boilerplate
                 </Button>
-                <Button variant="contained" onClick={() => {}} sx={{ mr: 3 }}>
+                <Button variant="contained" onClick={navigateToGenerateCode} sx={{ mr: 3 }}>
                   Generate Code
                 </Button>
               </Box>
