@@ -155,7 +155,7 @@ async def get_issue(repo_name:str, issue_id: int):
     return created_issue_list
 
 @app.post("/repo/{repo_name}/{issue_id}/create-boilerplate")
-async def get_issue(repo_name:str, issue_id: int):
+async def generate_code(repo_name:str, issue_id: int):
     user = g.get_user(username)
     repo = user.get_repo(repo_name)
     issue = repo.get_issue(number=issue_id)
