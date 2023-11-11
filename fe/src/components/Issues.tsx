@@ -5,7 +5,7 @@ import { useMyContext } from './Context';
 import { fetcher } from '../fetcher';
 import _set from 'lodash.set';
 
-function Issue() {
+function Issues() {
   const navigate = useNavigate();
   const { state, handleChange } = useMyContext();
 
@@ -57,7 +57,7 @@ function Issue() {
       {item.subtasks ? (
         <>
           {item.subtasks.map((it, index) => (
-            <Paper key={index} sx={{ m: 2, p: 2 }}>
+            <Paper key={index} sx={{ my: 2, p: 2 }}>
               <Typography variant="body1">{it.title}</Typography>
               <Typography variant="body2">{it.description}</Typography>
               <Box sx={{ mr: 1, pt: 2 }}>
@@ -68,9 +68,11 @@ function Issue() {
                   Generate Code
                 </Button>
                 {it.prLink ? (
-                  <Link href={it.prLink} target="_blank">
-                    PR Link
-                  </Link>
+                  <Button variant="outlined">
+                    <Link href={it.prLink} target="_blank">
+                      See open PR
+                    </Link>
+                  </Button>
                 ) : (
                   <Button variant="contained" onClick={generateAndOpenPR(index)} sx={{ mr: 3 }}>
                     Generate Code and PR
@@ -89,4 +91,4 @@ function Issue() {
   );
 }
 
-export default Issue;
+export default Issues;

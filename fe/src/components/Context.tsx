@@ -10,10 +10,12 @@ interface IState {
 interface IMyContext {
   state: IState;
   handleChange: (value: Partial<IState>) => void;
+  clear: () => void;
 }
 
 const MyContext = React.createContext<IMyContext>({
   handleChange: () => {},
+  clear: () => {},
   state: { repoURL: undefined, issues: undefined, activeIssue: undefined },
 });
 
@@ -33,7 +35,12 @@ function Context({ children }: { children: any }) {
     setUpdater((current) => current + 1);
   }, []);
 
-  return <MyContext.Provider value={{ state: getData(), handleChange }}>{children}</MyContext.Provider>;
+  const clear = useCallback(() => {
+    localStorage.removeItem('my-data');
+    setUpdater((current) => current + 1);
+  }, []);
+
+  return <MyContext.Provider value={{ state: getData(), handleChange, clear }}>{children}</MyContext.Provider>;
 }
 
 export default Context;
