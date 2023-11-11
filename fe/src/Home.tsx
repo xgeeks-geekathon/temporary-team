@@ -15,7 +15,7 @@ function Home() {
     if (!state.repoURL || state.issues?.length) return;
 
     fetcher<IIssue[]>(`repo/${state.repoURL}/issues`).then((data) => {
-      handleChange({ issues: data, activeIssue: data[0] });
+      handleChange({ issues: data, activeIssue: 0 });
     });
   }, [handleChange, state]);
 
@@ -26,7 +26,7 @@ function Home() {
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <IssuesMenu />
         <Paper sx={{ flex: 1, display: 'flex', padding: 3, ml: 3, flexDirection: 'column' }}>
-          {state.activeIssue && <Issue item={state.activeIssue} />}
+          <Issue />
         </Paper>
       </Box>
     </>

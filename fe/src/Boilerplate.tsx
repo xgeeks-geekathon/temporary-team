@@ -14,13 +14,14 @@ function Boilerplate() {
   const [boilerplateData, setBoilerplateData] = useState<IBoilerplate[]>();
 
   useEffect(() => {
-    if (!state.repoURL || !state.activeIssue) return;
+    if (!state.repoURL || !state.issues || !state.activeIssue) return;
 
-    fetcher<IBoilerplate[]>(`repo/${state.repoURL}/${state.activeIssue?.id}/create-boilerplate`, 'POST').then(
-      (data) => {
-        setBoilerplateData(data);
-      }
-    );
+    fetcher<IBoilerplate[]>(
+      `repo/${state.repoURL}/${state.issues[state.activeIssue].id}/create-boilerplate`,
+      'POST'
+    ).then((data) => {
+      setBoilerplateData(data);
+    });
   }, [state]);
 
   return (
@@ -30,9 +31,9 @@ function Boilerplate() {
         Back
       </Button>
 
-      {state.activeIssue && (
+      {state.issues && state.activeIssue && (
         <>
-          <Typography variant="h6">{state.activeIssue.title}</Typography>
+          <Typography variant="h6">{state.issues[state.activeIssue].title}</Typography>
           {boilerplateData?.map((item, index) => (
             <BoilerplateItem key={index}>{item}</BoilerplateItem>
           ))}

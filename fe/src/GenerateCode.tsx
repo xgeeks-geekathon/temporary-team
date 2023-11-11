@@ -15,9 +15,9 @@ function GenerateCode() {
         Back
       </Button>
 
-      {state.activeIssue && (
+      {state.issues && state.activeIssue !== undefined && (
         <>
-          <Typography variant="h6">{state.activeIssue.title}</Typography>
+          <Typography variant="h6">{state.issues[state.activeIssue].title}</Typography>
 
           <CodeItem>
             It is a long established fact that a reader will be distracted by the readable content of a page when

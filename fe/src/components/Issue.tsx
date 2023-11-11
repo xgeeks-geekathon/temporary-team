@@ -1,28 +1,25 @@
 import { Box, Button, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { IIssue, ISubtask } from '../types';
+import { ISubtask } from '../types';
 import { useMyContext } from './Context';
 import { fetcher } from '../fetcher';
+import _set from 'lodash.set';
 
-interface Props {
-  item: IIssue;
-}
-
-function Issue({ item }: Props) {
+function Issue() {
   const navigate = useNavigate();
   const { state, handleChange } = useMyContext();
 
+  const item = state.issues && state.activeIssue !== undefined ? state.issues[state.activeIssue] : undefined;
+
   const execute = () => {
-    if (!state.repoURL) return;
+    if (!state.repoURL || !item) return;
 
     fetcher<ISubtask[]>(`repo/${state.repoURL}/${item.id}`, 'POST').then((data) => {
-      const nextIssues = state.issues ? [...state.issues] : [];
-      const index = nextIssues.findIndex((it) => it.id === item.id);
+      const nextState = { ...state };
 
-      if (!data || nextIssues[index].subTasks) return;
+      if (state.activeIssue === undefined) return;
 
-      nextIssues[index] = { ...nextIssues[index], subTasks: data };
-      const nextState = { ...state, issues: nextIssues, activeIssue: nextIssues[index] };
+      _set(nextState, ['issues', state.activeIssue, 'subtasks'], data);
 
       handleChange(nextState);
     });
@@ -36,6 +33,20 @@ function Issue({ item }: Props) {
     navigate('/generate-code');
   };
 
+  const generateAndOpenPR = (subtaskIndex: number) => () => {
+    const data = {} as ISubtask;
+
+    if (!data || state.activeIssue === undefined || !state.issues) return;
+
+    const nextState = { ...state };
+
+    _set(nextState, ['issues', state.activeIssue, 'subtasks', subtaskIndex, 'prLink'], 'google.com');
+
+    handleChange(nextState);
+  };
+
+  if (!item) return <></>;
+
   return (
     <>
       <Typography variant="h6">{item.title}</Typography>
@@ -43,18 +54,21 @@ function Issue({ item }: Props) {
         {item.description}
       </Typography>
 
-      {item.subTasks ? (
+      {item.subtasks ? (
         <>
-          {item.subTasks.map((it) => (
-            <Paper sx={{ m: 2, p: 2 }}>
+          {item.subtasks.map((it, index) => (
+            <Paper key={index} sx={{ m: 2, p: 2 }}>
               <Typography variant="body1">{it.title}</Typography>
               <Typography variant="body2">{it.description}</Typography>
               <Box sx={{ mr: 1, pt: 2 }}>
                 <Button variant="contained" onClick={navigateToBoilerplate} sx={{ mr: 3 }}>
-                  Generate Boilerplate
+                  Get Boilerplate
                 </Button>
                 <Button variant="contained" onClick={navigateToGenerateCode} sx={{ mr: 3 }}>
                   Generate Code
+                </Button>
+                <Button variant="contained" onClick={generateAndOpenPR(index)} sx={{ mr: 3 }}>
+                  Generate Code and PR
                 </Button>
               </Box>
             </Paper>

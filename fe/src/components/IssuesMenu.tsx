@@ -8,11 +8,13 @@ function IssuesMenu() {
     <Paper sx={{ padding: 3, width: '20%' }}>
       <Typography variant="h5">Issues</Typography>
       <MenuList>
-        {state.issues?.map((item) => (
+        {state.issues?.map((item, index) => (
           <MenuItem
             key={item.id}
-            selected={state.activeIssue?.id === item.id}
-            onClick={() => handleChange({ activeIssue: item })}
+            selected={
+              state.issues && state.activeIssue !== undefined ? state.issues[state.activeIssue].id === item.id : false
+            }
+            onClick={() => handleChange({ activeIssue: index })}
             sx={{ px: 1 }}
           >
             {item.title}

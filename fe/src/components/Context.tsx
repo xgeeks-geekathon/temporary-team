@@ -4,7 +4,7 @@ import { IIssue } from '../types';
 interface IState {
   repoURL: string | undefined;
   issues: IIssue[] | undefined;
-  activeIssue: IIssue | undefined;
+  activeIssue: number | undefined;
 }
 
 interface IMyContext {
