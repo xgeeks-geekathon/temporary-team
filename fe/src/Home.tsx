@@ -3,6 +3,8 @@ import Issues from './components/Issues';
 import DefineRepoModal from './components/DefineRepoModal';
 import { useNavigate } from 'react-router-dom';
 import { useMyContext } from './components/Context';
+import { useFetcher } from './fetcher';
+import { useEffect } from 'react';
 
 function Home() {
   const navigate = useNavigate();
@@ -15,6 +17,14 @@ function Home() {
   const navigateTo = () => {
     navigate('/boilerplate');
   };
+
+  const issuesData = useFetcher(!state.repoURL);
+
+  useEffect(() => {
+    if (!issuesData.data) return;
+
+    handleChange({ issues: issuesData.data });
+  }, [issuesData.data, handleChange]);
 
   return (
     <>

@@ -16,6 +16,7 @@ const style = {
 
 function DefineRepoModal() {
   const [open, setOpen] = useState(false);
+  const [input, setInput] = useState<string>();
 
   const handleOpen = () => {
     setOpen(true);
@@ -37,7 +38,17 @@ function DefineRepoModal() {
           <Typography variant="h6" component="h2">
             Define Repo URL
           </Typography>
-          <Input onChange={(e) => handleChange({ repoURL: e.target.value })} sx={{ width: '100%' }} />
+          <Input onChange={(e) => setInput(e.target.value)} sx={{ width: '100%' }} />
+          <Button
+            variant="contained"
+            onClick={() => {
+              handleChange({ repoURL: input });
+              handleClose();
+            }}
+            sx={{ mt: 3 }}
+          >
+            Save
+          </Button>
         </Box>
       </Modal>
     </>

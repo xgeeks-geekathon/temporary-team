@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 
 interface IIssue {}
 
@@ -19,19 +19,22 @@ const MyContext = React.createContext<IMyContext>({
 });
 
 function Context({ children }: { children: any }) {
-  const [state, setState] = useState<IState>({
-    repoURL: undefined,
-    issues: undefined,
-    activeIssue: undefined,
-  });
+  const [, setUpdater] = useState(0);
 
-  const handleChange = (value: Partial<IState>) => {
-    setState({ ...state, ...value });
+  const getData = () => {
+    const stringData = localStorage.getItem('my-data');
+
+    if (!stringData) return {};
+
+    return JSON.parse(stringData);
   };
 
-  console.log(state);
+  const handleChange = useCallback((value: Partial<IState>) => {
+    localStorage.setItem('my-data', JSON.stringify({ ...getData(), ...value }));
+    setUpdater((current) => current + 1);
+  }, []);
 
-  return <MyContext.Provider value={{ state, handleChange }}>{children}</MyContext.Provider>;
+  return <MyContext.Provider value={{ state: getData(), handleChange }}>{children}</MyContext.Provider>;
 }
 
 export default Context;
