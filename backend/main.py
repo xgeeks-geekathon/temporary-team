@@ -76,7 +76,7 @@ async def get_issues(repo_name: str):
 
 # Create endpoint that receives an issue id, 
 # extracts the body and send it to the model to split into subtasks
-@app.post("/repo/{repo_name}/{issue_id}")
+@app.post("/repo/{repo_name}/issues/{issue_id}")
 async def get_issue(repo_name:str, issue_id: int):
     user = g.get_user(username)
     repo = user.get_repo(repo_name)
@@ -120,7 +120,7 @@ async def get_issue(repo_name:str, issue_id: int):
     
     return created_issue_list
 
-@app.post("/repo/{repo_name}/{issue_id}/create-boilerplate")
+@app.post("/repo/{repo_name}/subtask/{issue_id}/boilerplate")
 async def get_issue(repo_name:str, issue_id: int):
     user = g.get_user(username)
     repo = user.get_repo(repo_name)

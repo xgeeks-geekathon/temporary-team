@@ -14,7 +14,7 @@ function Issue() {
   const execute = () => {
     if (!state.repoURL || !item) return;
 
-    fetcher<ISubtask[]>(`repo/${state.repoURL}/${item.id}`, 'POST').then((data) => {
+    fetcher<ISubtask[]>(`repo/${state.repoURL}/issues/${item.id}`, 'POST').then((data) => {
       const nextState = { ...state };
 
       if (state.activeIssue === undefined) return;

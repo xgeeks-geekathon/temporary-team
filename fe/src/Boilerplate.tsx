@@ -17,7 +17,7 @@ function Boilerplate() {
     if (!state.repoURL || !state.issues || !state.activeIssue) return;
 
     fetcher<IBoilerplate[]>(
-      `repo/${state.repoURL}/${state.issues[state.activeIssue].id}/create-boilerplate`,
+      `repo/${state.repoURL}/subtask/${state.issues[state.activeIssue].id}/boilerplate`,
       'POST'
     ).then((data) => {
       setBoilerplateData(data);
