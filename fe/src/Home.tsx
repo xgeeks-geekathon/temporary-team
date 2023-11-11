@@ -6,16 +6,17 @@ import { useFetcher } from './fetcher';
 import { useEffect } from 'react';
 import Title from './components/Title';
 import Issue from './components/Issue';
+import { IIssue } from './types';
 
 function Home() {
   const { state, handleChange } = useMyContext();
 
-  const issuesData = useFetcher(`repo/${state.repoURL}/issues`, !state.repoURL);
+  const issuesData = useFetcher<IIssue[]>(`repo/${state.repoURL}/issues`, { disabled: !state.repoURL });
 
   useEffect(() => {
     if (!issuesData.data) return;
 
-    handleChange({ issues: issuesData.data, activeIssue: 0 });
+    handleChange({ issues: issuesData.data, activeIssue: issuesData.data[0] });
   }, [issuesData.data, handleChange]);
 
   return (
@@ -25,7 +26,7 @@ function Home() {
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <IssuesMenu />
         <Paper sx={{ flex: 1, display: 'flex', padding: 3, ml: 3, flexDirection: 'column' }}>
-          {state.issues && state.activeIssue !== undefined && <Issue item={state.issues[state.activeIssue]} />}
+          {state.activeIssue && <Issue item={state.activeIssue} />}
         </Paper>
       </Box>
     </>

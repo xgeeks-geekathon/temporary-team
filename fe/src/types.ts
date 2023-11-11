@@ -3,3 +3,5 @@ export interface IIssue {
   title: string;
   description: string;
 }
+
+export type IBoilerplate = string;
