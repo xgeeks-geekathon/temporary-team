@@ -2,7 +2,7 @@ import { Box, Paper } from '@mui/material';
 import IssuesMenu from './components/IssuesMenu';
 import DefineRepoModal from './components/DefineRepoModal';
 import { useMyContext } from './components/Context';
-import { useFetcher } from './fetcher';
+import { fetcher } from './fetcher';
 import { useEffect } from 'react';
 import Title from './components/Title';
 import Issue from './components/Issue';
@@ -11,13 +11,13 @@ import { IIssue } from './types';
 function Home() {
   const { state, handleChange } = useMyContext();
 
-  const issuesData = useFetcher<IIssue[]>(`repo/${state.repoURL}/issues`, { disabled: !state.repoURL });
-
   useEffect(() => {
-    if (!issuesData.data) return;
+    if (!state.repoURL || state.issues?.length) return;
 
-    handleChange({ issues: issuesData.data, activeIssue: issuesData.data[0] });
-  }, [issuesData.data, handleChange]);
+    fetcher<IIssue[]>(`repo/${state.repoURL}/issues`).then((data) => {
+      handleChange({ issues: data, activeIssue: data[0] });
+    });
+  }, [handleChange, state]);
 
   return (
     <>
