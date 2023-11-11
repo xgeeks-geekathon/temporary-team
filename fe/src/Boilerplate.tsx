@@ -1,14 +1,12 @@
-import { Button, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useMyContext } from './components/Context';
-import Title from './components/Title';
 import BoilerplateItem from './components/BoilerplateItem';
-import { useNavigate } from 'react-router-dom';
 import { IBoilerplate } from './types';
 import { useEffect, useState } from 'react';
 import { fetcher } from './fetcher';
+import NavBar from './components/NavBar';
 
 function Boilerplate() {
-  const navigate = useNavigate();
   const { state } = useMyContext();
 
   const [boilerplateData, setBoilerplateData] = useState<IBoilerplate[]>();
@@ -26,10 +24,7 @@ function Boilerplate() {
 
   return (
     <>
-      <Title />
-      <Button variant="contained" onClick={() => navigate('/')} sx={{ mb: 3 }}>
-        Back
-      </Button>
+      <NavBar />
 
       {state.issues && state.activeIssue && (
         <>

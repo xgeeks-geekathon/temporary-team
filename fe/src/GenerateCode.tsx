@@ -1,19 +1,14 @@
-import { Button, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Typography } from '@mui/material';
 import { useMyContext } from './components/Context';
-import Title from './components/Title';
 import CodeItem from './components/CodeItem';
+import NavBar from './components/NavBar';
 
 function GenerateCode() {
-  const navigate = useNavigate();
   const { state } = useMyContext();
 
   return (
     <>
-      <Title />
-      <Button variant="contained" onClick={() => navigate('/')} sx={{ mb: 3 }}>
-        Back
-      </Button>
+      <NavBar />
 
       {state.issues && state.activeIssue !== undefined && (
         <>

@@ -1,12 +1,11 @@
 import { Box, Paper } from '@mui/material';
 import IssuesMenu from './components/IssuesMenu';
-import DefineRepoModal from './components/DefineRepoModal';
 import { useMyContext } from './components/Context';
 import { fetcher } from './fetcher';
 import { useEffect } from 'react';
-import Title from './components/Title';
-import Issue from './components/Issue';
+import Issues from './components/Issues';
 import { IIssue } from './types';
+import NavBar from './components/NavBar';
 
 function Home() {
   const { state, handleChange } = useMyContext();
@@ -21,12 +20,11 @@ function Home() {
 
   return (
     <>
-      <Title />
-      <DefineRepoModal />
+      <NavBar />
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <IssuesMenu />
         <Paper sx={{ flex: 1, display: 'flex', padding: 3, ml: 3, flexDirection: 'column' }}>
-          <Issue />
+          <Issues />
         </Paper>
       </Box>
     </>

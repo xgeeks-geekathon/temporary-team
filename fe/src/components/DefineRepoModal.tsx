@@ -26,13 +26,24 @@ function DefineRepoModal() {
     setOpen(false);
   };
 
-  const { handleChange } = useMyContext();
+  const {
+    state: { repoURL },
+    handleChange,
+    clear,
+  } = useMyContext();
 
   return (
     <>
-      <Button variant="contained" onClick={handleOpen} sx={{ mb: 3 }}>
-        Define Repo URL
-      </Button>
+      <Box>
+        <Button variant="contained" onClick={handleOpen} sx={{ mb: 3, mr: 3 }}>
+          Define Repo URL
+        </Button>
+        {repoURL && (
+          <Button variant="contained" onClick={clear} sx={{ mb: 3 }}>
+            Clear
+          </Button>
+        )}
+      </Box>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <Typography variant="h6" component="h2">
