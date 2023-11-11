@@ -1,4 +1,4 @@
-import { Box, Button, Paper, Typography } from '@mui/material';
+import { Box, Button, Link, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ISubtask } from '../types';
 import { useMyContext } from './Context';
@@ -40,7 +40,7 @@ function Issue() {
 
     const nextState = { ...state };
 
-    _set(nextState, ['issues', state.activeIssue, 'subtasks', subtaskIndex, 'prLink'], 'google.com');
+    _set(nextState, ['issues', state.activeIssue, 'subtasks', subtaskIndex, 'prLink'], 'https://google.com');
 
     handleChange(nextState);
   };
@@ -67,9 +67,15 @@ function Issue() {
                 <Button variant="contained" onClick={navigateToGenerateCode} sx={{ mr: 3 }}>
                   Generate Code
                 </Button>
-                <Button variant="contained" onClick={generateAndOpenPR(index)} sx={{ mr: 3 }}>
-                  Generate Code and PR
-                </Button>
+                {it.prLink ? (
+                  <Link href={it.prLink} target="_blank">
+                    PR Link
+                  </Link>
+                ) : (
+                  <Button variant="contained" onClick={generateAndOpenPR(index)} sx={{ mr: 3 }}>
+                    Generate Code and PR
+                  </Button>
+                )}
               </Box>
             </Paper>
           ))}
