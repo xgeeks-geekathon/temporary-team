@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useState } from 'react';
-
-interface IIssue {}
+import { IIssue } from '../types';
 
 interface IState {
   repoURL: string | undefined;
