@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMyContext } from './components/Context';
 import { useFetcher } from './fetcher';
 import { useEffect } from 'react';
+import Title from './components/Title';
 
 function Home() {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ function Home() {
 
   return (
     <>
+      <Title />
       <DefineRepoModal />
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <Paper sx={{ padding: 3 }}>
