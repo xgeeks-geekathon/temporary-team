@@ -12,13 +12,20 @@ function Boilerplate() {
   const [boilerplateData, setBoilerplateData] = useState<IBoilerplate[]>();
 
   useEffect(() => {
-    if (!state.repoURL || !state.issues || state.activeIssue === undefined) return;
+    if (
+      !state.repoURL ||
+      !state.issues ||
+      state.activeIssue === undefined ||
+      !state.issues[state.activeIssue] ||
+      !state.issues[state.activeIssue].subtasks
+    )
+      return;
 
-    fetcher<IBoilerplate[]>(
-      `repo/${state.repoURL}/subtask/${state.issues[state.activeIssue].id}/boilerplate`,
+    fetcher<{ error: string | null; boilerplate: IBoilerplate[] }>(
+      `repo/${state.repoURL}/${state.issues[state.activeIssue].id}/create-boilerplate`,
       'POST'
     ).then((data) => {
-      setBoilerplateData(data);
+      setBoilerplateData(data.boilerplate);
     });
   }, [state]);
 
@@ -29,6 +36,7 @@ function Boilerplate() {
       {state.issues && state.activeIssue !== undefined && (
         <>
           <Typography variant="h6">{state.issues[state.activeIssue].title}</Typography>
+
           {boilerplateData?.map((item, index) => (
             <BoilerplateItem key={index}>{item}</BoilerplateItem>
           ))}

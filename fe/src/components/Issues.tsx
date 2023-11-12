@@ -14,13 +14,13 @@ function Issues() {
 
   const item = state.issues && state.activeIssue !== undefined ? state.issues[state.activeIssue] : undefined;
 
-  const execute = () => {
+  const generateSubtasks = () => {
     if (!state.repoURL || !item) return;
 
     fetcher<ISubtask[]>(`repo/${state.repoURL}/issues/${item.id}`, 'POST').then((data) => {
       const nextState = { ...state };
 
-      if (state.activeIssue === undefined) return;
+      if (state.activeIssue === undefined || !Array.isArray(data)) return;
 
       _set(nextState, ['issues', state.activeIssue, 'subtasks'], data);
 
@@ -28,7 +28,7 @@ function Issues() {
     });
   };
 
-  const navigateToBoilerplate = () => {
+  const navigateToBoilerplate = (index: number) => () => {
     navigate('/boilerplate');
   };
 
@@ -37,15 +37,20 @@ function Issues() {
   };
 
   const generateAndOpenPR = (subtaskIndex: number) => () => {
-    const data = {} as ISubtask;
+    if (!state.repoURL || !item) return;
 
-    if (!data || state.activeIssue === undefined || !state.issues) return;
+    fetcher<{ error: string | null; data: any }>(
+      `repo/${state.repoURL}/${item.subtasks?.[subtaskIndex].id}/create-boilerplate`,
+      'POST'
+    ).then((data) => {
+      if (!data || data.error || state.activeIssue === undefined || !state.issues) return;
 
-    const nextState = { ...state };
+      const nextState = { ...state };
 
-    _set(nextState, ['issues', state.activeIssue, 'subtasks', subtaskIndex, 'prLink'], 'https://google.com');
+      _set(nextState, ['issues', state.activeIssue, 'subtasks', subtaskIndex, 'prLink'], data.data);
 
-    handleChange(nextState);
+      handleChange(nextState);
+    });
   };
 
   const handleOpen = () => {
@@ -62,16 +67,22 @@ function Issues() {
     <>
       <Paper sx={{ flex: 1, display: 'flex', padding: 3, ml: 3, flexDirection: 'column' }}>
         <Typography variant="h6">{item.title}</Typography>
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          {item.description}
-        </Typography>
+        {item.body.split('\n').map((partialBody) => (
+          <Typography key={partialBody} variant="body1" sx={{ mt: 2 }}>
+            {partialBody}
+          </Typography>
+        ))}
 
         {item.subtasks ? (
           <>
             {item.subtasks.map((it, index) => (
               <Paper key={index} sx={{ my: 2, p: 2 }}>
                 <Typography variant="body1">{it.title}</Typography>
-                <Typography variant="body2">{it.description}</Typography>
+                {it.body.split('\n').map((partialBody) => (
+                  <Typography key={partialBody} variant="body1" sx={{ mt: 2 }}>
+                    {partialBody}
+                  </Typography>
+                ))}
                 <Box sx={{ mr: 1, pt: 2 }}>
                   {it.prLink ? (
                     <>
@@ -86,12 +97,12 @@ function Issues() {
                     </>
                   ) : (
                     <>
-                      <Button variant="contained" onClick={navigateToBoilerplate} sx={{ mr: 3 }}>
+                      {/* <Button variant="contained" onClick={navigateToBoilerplate(index)} sx={{ mr: 3 }}>
                         Get Boilerplate
                       </Button>
                       <Button variant="contained" onClick={navigateToGenerateCode} sx={{ mr: 3 }}>
                         Generate Code
-                      </Button>
+                      </Button> */}
                       <Button variant="contained" onClick={generateAndOpenPR(index)} sx={{ mr: 3 }}>
                         Generate Code and PR
                       </Button>
@@ -102,7 +113,7 @@ function Issues() {
             ))}
           </>
         ) : (
-          <Button variant="contained" onClick={execute} sx={{ mt: 3 }}>
+          <Button variant="contained" onClick={generateSubtasks} sx={{ mt: 3 }}>
             Generate Subtasks
           </Button>
         )}

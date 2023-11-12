@@ -7,7 +7,7 @@ function IssuesMenu() {
   if (!state.issues) return <></>;
 
   return (
-    <Paper sx={{ padding: 3, width: '20%' }}>
+    <Paper sx={{ padding: 3 }}>
       <Typography variant="h5">Issues</Typography>
       <MenuList>
         {state.issues.map((item, index) => (

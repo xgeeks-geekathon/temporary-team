@@ -13,8 +13,8 @@ function Home() {
   useEffect(() => {
     if (!state.repoURL || state.issues?.length) return;
 
-    fetcher<IIssue[]>(`repo/${state.repoURL}/issues`).then((data) => {
-      handleChange({ issues: data, activeIssue: 0 });
+    fetcher<{ issues: IIssue[] }>(`repo/${state.repoURL}/issues`).then((data) => {
+      handleChange({ issues: data.issues, activeIssue: 0 });
     });
   }, [handleChange, state]);
 
