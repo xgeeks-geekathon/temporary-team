@@ -1,11 +1,11 @@
-import { Box, Paper } from '@mui/material';
-import IssuesMenu from './components/IssuesMenu';
-import { useMyContext } from './components/Context';
-import { fetcher } from './fetcher';
+import { Box } from '@mui/material';
+import IssuesMenu from '../components/IssuesMenu';
+import { useMyContext } from '../components/Context';
+import { fetcher } from '../fetcher';
 import { useEffect } from 'react';
-import Issues from './components/Issues';
-import { IIssue } from './types';
-import NavBar from './components/NavBar';
+import Issues from '../components/Issues';
+import { IIssue } from '../types';
+import NavBar from '../components/NavBar';
 
 function Home() {
   const { state, handleChange } = useMyContext();
@@ -21,11 +21,10 @@ function Home() {
   return (
     <>
       <NavBar />
+
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <IssuesMenu />
-        <Paper sx={{ flex: 1, display: 'flex', padding: 3, ml: 3, flexDirection: 'column' }}>
-          <Issues />
-        </Paper>
+        <Issues />
       </Box>
     </>
   );

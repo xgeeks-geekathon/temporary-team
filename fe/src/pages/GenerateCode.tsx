@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
-import { useMyContext } from './components/Context';
-import CodeItem from './components/CodeItem';
-import NavBar from './components/NavBar';
+import { useMyContext } from '../components/Context';
+import CodeItem from '../components/CodeItem';
+import NavBar from '../components/NavBar';
 
 function GenerateCode() {
   const { state } = useMyContext();

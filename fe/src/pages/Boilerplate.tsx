@@ -1,10 +1,10 @@
 import { Typography } from '@mui/material';
-import { useMyContext } from './components/Context';
-import BoilerplateItem from './components/BoilerplateItem';
-import { IBoilerplate } from './types';
+import { useMyContext } from '../components/Context';
+import BoilerplateItem from '../components/BoilerplateItem';
+import { IBoilerplate } from '../types';
 import { useEffect, useState } from 'react';
-import { fetcher } from './fetcher';
-import NavBar from './components/NavBar';
+import { fetcher } from '../fetcher';
+import NavBar from '../components/NavBar';
 
 function Boilerplate() {
   const { state } = useMyContext();
@@ -12,7 +12,7 @@ function Boilerplate() {
   const [boilerplateData, setBoilerplateData] = useState<IBoilerplate[]>();
 
   useEffect(() => {
-    if (!state.repoURL || !state.issues || !state.activeIssue) return;
+    if (!state.repoURL || !state.issues || state.activeIssue === undefined) return;
 
     fetcher<IBoilerplate[]>(
       `repo/${state.repoURL}/subtask/${state.issues[state.activeIssue].id}/boilerplate`,
@@ -26,7 +26,7 @@ function Boilerplate() {
     <>
       <NavBar />
 
-      {state.issues && state.activeIssue && (
+      {state.issues && state.activeIssue !== undefined && (
         <>
           <Typography variant="h6">{state.issues[state.activeIssue].title}</Typography>
           {boilerplateData?.map((item, index) => (

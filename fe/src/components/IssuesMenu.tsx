@@ -4,11 +4,13 @@ import { useMyContext } from './Context';
 function IssuesMenu() {
   const { state, handleChange } = useMyContext();
 
+  if (!state.issues) return <></>;
+
   return (
     <Paper sx={{ padding: 3, width: '20%' }}>
       <Typography variant="h5">Issues</Typography>
       <MenuList>
-        {state.issues?.map((item, index) => (
+        {state.issues.map((item, index) => (
           <MenuItem
             key={item.id}
             selected={
