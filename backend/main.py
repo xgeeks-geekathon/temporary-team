@@ -24,45 +24,45 @@ app = FastAPI()
 config_list = config_list_from_json(env_or_file="OAI_CONFIG_LIST")
 
 llm_config = {
-    "functions": [
-        {
-            "name": "create_branch",
-            "description": "Creates the branch to the repo.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "branch_name": {
-                        "type": "string",
-                        "description": "Name of the branch to be created.",
-                    },
-                    "repo_name": {
-                        "type": "string",
-                        "description": "Name of the repo to create the branch in.",
-                    },
-                },
-                "required": ["branch_name", "repo_name"],
-            },
-        },
-        {
-            "name": "save",
-            "description": "Save the code to disk.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "content": {
-                        "type": "string",
-                        "description": "Content to be saved in the file",
-                    },
-                    "pathToFile": {
-                        "type": "string",
-                        "description": "Name of the file",
-                    }
+    # "functions": [
+    #     # {
+    #     #     "name": "create_branch",
+    #     #     "description": "Creates the branch to the repo.",
+    #     #     "parameters": {
+    #     #         "type": "object",
+    #     #         "properties": {
+    #     #             "branch_name": {
+    #     #                 "type": "string",
+    #     #                 "description": "Name of the branch to be created.",
+    #     #             },
+    #     #             "repo_name": {
+    #     #                 "type": "string",
+    #     #                 "description": "Name of the repo to create the branch in.",
+    #     #             },
+    #     #         },
+    #     #         "required": ["branch_name", "repo_name"],
+    #     #     },
+    #     # },
+    #     {
+    #         "name": "save",
+    #         "description": "Save the code to disk.",
+    #         "parameters": {
+    #             "type": "object",
+    #             "properties": {
+    #                 "content": {
+    #                     "type": "string",
+    #                     "description": "Content to be saved in the file",
+    #                 },
+    #                 "pathToFile": {
+    #                     "type": "string",
+    #                     "description": "Name of the file",
+    #                 }
 
-                },
-                "required": ["content", "pathToFile"],
-            }
-        },
-    ],
+    #             },
+    #             "required": ["content", "pathToFile"],
+    #         }
+    #     },
+    # ],
     "request_timeout": 300,
     "seed": 42,
     "config_list" : config_list,
@@ -85,10 +85,8 @@ def commit_changes(repo_name, branch_name, commit_message):
     return {"success": True}
 
 def save(content, pathToFile):
-    dir_path = os.path.dirname(pathToFile)
-    if(dir_path != ""):
-        os.makedirs(dir_path, exist_ok=True)
-    with open(pathToFile, "w+") as f:
+    path = os.path.join("geekathon", pathToFile)
+    with open(path, "w+") as f:
         f.write(content)
 
 username = "FranciscoGaspar"
@@ -165,7 +163,7 @@ async def generate_code(repo_name:str, issue_id: int):
 
     promptTemplate = """
         Given the following task name create a branch name.
-        The branch name should be based of the title of the task.
+        The branch name should be based on the title of the task.
         If the task is a feature the branch name should be feature/{task_name}.
         If the task is a bug the branch name should be bug/{task_name}.
 
@@ -189,30 +187,49 @@ async def generate_code(repo_name:str, issue_id: int):
 
     user_proxy = UserProxyAgent(
         name="Admin",
-        system_message=f"A Human Admin. Interact with the MemGPT_coder execute the plan. Plan execution needs to be approved by this admin. Save the files executed and save them using the functions defined.",
+        system_message=f"Reply TERMINATE if the task has been solved at full satisfaction. Otherwise, reply CONTINUE, or the reason why the task is not solved yet.",
+        is_termination_msg=lambda x: x.get("content", "") and x.get("content", "").rstrip().endswith("TERMINATE"),
         human_input_mode="NEVER",
         function_map={
             "save": save
         },
-        code_execution_config={"work_dir": "geekathon", "use_docker": "python:latest"},
+        code_execution_config={"work_dir": "geekathon", "use_docker":"python:latest"},
+        llm_config=llm_config
     )
     
     executor = AssistantAgent(
         name="Executor",
-        system_message="Executor. Execute the code written by the engineer and report the result.",
+        system_message="Executor. Execute the code written by the coder and report the result.",
         code_execution_config={"last_n_messages": 3, "work_dir": "geekathon"},
+        llm_config=llm_config
+    )
+    
+    coder = AssistantAgent(
+        name="Coder",
+        system_message="""You are a engineer. You can write python/shell code to solve tasks. 
+        You know how to use FastAPI to create APIs. 
+        You want to make code able to complete a task. 
+        Wrap the code in a code block that specifies the script type. 
+        The user can't modify your code. 
+        Do not suggest incomplete code which requires others to modify. 
+        Suggest the full code. Make sure to save the file in the geekathon folder. 
+        Don't create additional folders.
+        If you want the user to save the code in a file before executing it, put # filename: <filename> inside the code block as the first line.""",
+        code_execution_config={"work_dir": "geekathon", "use_docker":"python:latest"},
+        llm_config=llm_config
     )
  
-    coder = create_autogen_memgpt_agent(
-        "MemGPT_coder",
-        persona_description="MemGPT_coder. You are a engineer. You can write python/shell code to solve tasks. You know how to use FastAPI to create APIs. You want to make code able to complete a task. Wrap the code in a code block that specifies the script type. The user can't modify your code. So do not suggest incomplete code which requires others to modify. Check the execution result returned by the executor. If the result indicates there is an error, fix the error and output the code again.Suggest the full code instead of partial code or code changes. Make sure to save the file in the correct folder.",
-        user_description=f"You are participating in a group chat with a user ({user_proxy.name}) and ({executor.name})"
-    )
+    # coder = create_autogen_memgpt_agent(
+    #     "MemGPT_coder",
+    #     persona_description="MemGPT_coder. You are a engineer. You can write python/shell code to solve tasks. You know how to use FastAPI to create APIs. You want to make code able to complete a task. Wrap the code in a code block that specifies the script type. The user can't modify your code. So do not suggest incomplete code which requires others to modify. Check the execution result returned by the executor. If the result indicates there is an error, fix the error and output the code again.Suggest the full code instead of partial code or code changes. Make sure to save the file in the correct folder.",
+    #     user_description=f"You are participating in a group chat with a user ({user_proxy.name}) and an executor ({executor.name})",
+    #     model="gpt-4-1106-preview"
+    # )
 
-    groupchat = GroupChat(agents=[user_proxy, coder, executor], messages=[], max_round=12)
+    groupchat = GroupChat(agents=[user_proxy, executor, coder], messages=[], max_round=12)
     manager = GroupChatManager(groupchat=groupchat, llm_config=llm_config)
 
-    user_proxy.initiate_chat(manager, message=f"I would like to generate the code in Python using FastAPI to resolve the following task: {issue.body}. Do not execute bash commands that starts with 'uvicorn'")
+    user_proxy.initiate_chat(manager, message=f"I would like to generate the code in Python using FastAPI to resolve the following task: {issue.body}. Do not execute bash commands that starts with 'uvicorn'. Save the code to disk")
 
     commit_changes(repo_name=repo_name, branch_name=result.content, commit_message=f"feat/{issue_id}: resolve issue")
 
