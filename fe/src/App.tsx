@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Home from './Home';
-import Boilerplate from './Boilerplate';
-import NotFound from './NotFound';
-import GenerateCode from './GenerateCode';
+import Home from './pages/Home';
+import Boilerplate from './pages/Boilerplate';
+import NotFound from './pages/NotFound';
+import GenerateCode from './pages/GenerateCode';
 
 function App() {
   return (
