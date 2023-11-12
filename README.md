@@ -44,6 +44,22 @@ Backend:
 poetry install
 ```
 
+2. Create a new `.env` with the following:
+```
+OPENAI_KEY=
+GITHUB_TOKEN=
+```
+
+3.Create a new `OAI_CONFIG_LIST` file with the following:
+```
+[
+    {
+        "model": "gpt-4-1106-preview",
+        "api_key": "sk-xxx"
+    }
+]
+```
+
 2.
 ```
 uvicorn main:app
