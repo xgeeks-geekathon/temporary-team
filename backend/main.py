@@ -66,6 +66,13 @@ def commit_changes(repo_name, branch_name, commit_message):
 
     return {"success": True}
 
+def move_to_commit_hash(hash, repo):
+    if(os.path.exists(repo.name)):
+        os.system(f"rm -rf {repo.name}")
+    os.system(f"git clone {repo.html_url} && cd {repo.name} && git checkout {hash}")
+
+    return {"success": True}
+
 def save(content, pathToFile):
     path = os.path.join("geekathon", pathToFile)
     with open(path, "w+") as f:
@@ -258,6 +265,41 @@ def generate_code(repo_name: str , issue_id: int):
     commit_changes(repo_name=repo_name, branch_name=branch_name, commit_message=f"feat/{issue_id}: resolve issue")
 
     repo.create_pull(base="main", head=branch_name, title=f"{issue.title}", body=f"Resolves #{issue_id}")
+
+@app.get("/repo/{repo_name}/{pull_id}/check-code")
+def generate_code(repo_name: str , pull_id: int):
+    user = g.get_user(username)
+    repo = user.get_repo(repo_name)
+    pull_request = repo.get_pull(pull_id)
+    commit_sha = pull_request.get_commits().reversed[0].sha
+
+    move_to_commit_hash(hash=commit_sha, repo=repo)
+
+    code = get_content("./geekathon/main.py")
+
+    chat = ChatOpenAI(temperature=0, openai_api_key=os.getenv('OPENAI_KEY'))
+
+    system_message_prompt = SystemMessagePromptTemplate.from_template("You are a helpful, professional and concise AI that can analyse a user story with acceptance criteria and a file with Python code and see if all the tasks in the user story are done. Do not suggest code modifications.")
+
+    promptTemplate = """
+        Given the following user story with acceptance criteria and the following code, tell me if the code matches with everything asked.
+        The code should complete in full the user story and all the acceptance criteria. Do not suggest code modifications, just say what is wrong.
+        
+        user_story: {user_story}
+
+        python_code: {code}
+
+        """
+
+    human_message_prompt = HumanMessagePromptTemplate.from_template(promptTemplate)
+
+    chat_prompt = ChatPromptTemplate(messages=[system_message_prompt, human_message_prompt])
+
+    chat_messages = chat_prompt.format_prompt(user_story=pull_request.body, code=code).to_messages()
+
+    result = chat(chat_messages)
+
+    return {"result": result.content}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
